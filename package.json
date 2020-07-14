@@ -2,6 +2,7 @@
   "name": "Simple-blockchain",
   "version": "1.0.0",
   "dependencies": {
-    "crypto-js": "latest"
+    "crypto-js": "latest",
+    "elliptic": "^6.5.3"
   }
 }
