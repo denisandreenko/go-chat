@@ -9,3 +9,7 @@
 #### Compile proto files 
 
 `protoc --go_out=plugins=grpc:. proto/*.proto`
+
+#### Run the app
+
+`docker run -it -p 8080:8080 docker_example`
