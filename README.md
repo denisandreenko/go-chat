@@ -12,4 +12,10 @@
 
 #### Run the app
 
-`docker run -it -p 8080:8080 docker_example`
+Build docker container:
+
+`docker build -t go-chat .`
+
+Run docker container:
+
+`docker run -it --name go-chat -p 8080:8080 go-chat`
