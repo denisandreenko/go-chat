@@ -14,6 +14,7 @@ import (
 	"github.com/denisandreenko/go-chat/proto"
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
 )
 
 var client proto.BroadcastClient
@@ -24,7 +25,7 @@ func init() {
 }
 
 func connect(user *proto.User) error {
-	var streamerror error
+	var streamError error
 
 	stream, err := client.CreateStream(context.Background(), &proto.Connect{
 		User:   user,
@@ -42,7 +43,7 @@ func connect(user *proto.User) error {
 		for {
 			msg, err := str.Recv()
 			if err != nil {
-				streamerror = fmt.Errorf("Error reading message: %v", err)
+				streamError = fmt.Errorf("Error reading message: %v", err)
 				break
 			}
 
@@ -51,24 +52,24 @@ func connect(user *proto.User) error {
 		}
 	}(stream)
 
-	return streamerror
+	return streamError
 }
 
 func main() {
 	timestamp := time.Now()
 	done := make(chan int)
 
-	name := flag.String("N", "Anon", "The name of the user")
+	name := flag.String("n", "Anonymous", "The name of the user")
 	flag.Parse()
 
-	id := sha256.Sum256([]byte(timestamp.String() + *name))
-
-	conn, err := grpc.Dial("localhost:8080", grpc.WithInsecure())
+	conn, err := grpc.Dial("localhost:8080", grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
-		log.Fatalf("Couldnt connect to service: %v", err)
+		log.Fatalf("Couldn't connect to the service: %v", err)
 	}
 
 	client = proto.NewBroadcastClient(conn)
+
+	id := sha256.Sum256([]byte(timestamp.String() + *name))
 	user := &proto.User{
 		Id:   hex.EncodeToString(id[:]),
 		Name: *name,
